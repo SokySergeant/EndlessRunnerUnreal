@@ -1,8 +1,10 @@
 
 #include "LevelSegmentsManager.h"
 #include "EndlessRunnerCharacter.h"
+#include "InGameWidget.h"
 #include "LevelSegment.h"
 #include "Components/BoxComponent.h"
+#include "Components/TextBlock.h"
 #include "Kismet/GameplayStatics.h"
 
 ALevelSegmentsManager::ALevelSegmentsManager()
@@ -17,6 +19,7 @@ ALevelSegmentsManager::ALevelSegmentsManager()
 	ScrollSpeed = 25.f;
 	ScrollSpeedIncreaseRate = 1.f;
 	DifficultyIncreaseRate = 1.f;
+	ScoreMultiplier = 1.f;
 }
 
 void ALevelSegmentsManager::BeginPlay()
@@ -50,6 +53,9 @@ void ALevelSegmentsManager::Tick(float DeltaTime)
 	{
 		CurrentlyActiveSegments[i]->AddActorLocalOffset(FVector(-ScrollSpeed, 0, 0));
 	}
+
+	if(InGameWidget == nullptr) return;
+	UpdateInGameWidgetValues();
 }
 
 void ALevelSegmentsManager::SpawnLevelSegment(FVector SpawnPos)
@@ -95,4 +101,12 @@ void ALevelSegmentsManager::StartMovingSegments()
 void ALevelSegmentsManager::StopMovingSegments()
 {
 	bCanMoveSegments = false;
+}
+
+void ALevelSegmentsManager::UpdateInGameWidgetValues()
+{
+	float Score = (ScrollSpeed + Difficulty) * ScoreMultiplier;
+	InGameWidget->ScoreText->SetText(FText::AsNumber(Score));
+
+	InGameWidget->SpeedText->SetText(FText::AsNumber(ScrollSpeed));
 }

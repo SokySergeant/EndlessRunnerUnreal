@@ -7,6 +7,7 @@
 
 class ALevelSegment;
 class UBoxComponent;
+class UInGameWidget;
 
 UCLASS()
 class ENDLESSRUNNER_API ALevelSegmentsManager : public AActor
@@ -25,6 +26,9 @@ class ENDLESSRUNNER_API ALevelSegmentsManager : public AActor
 	UPROPERTY(EditAnywhere, Category = LevelSegments)
 	float DifficultyIncreaseRate;
 
+	UPROPERTY(EditAnywhere, Category = LevelSegments)
+	float ScoreMultiplier;
+
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UBoxComponent> BoxCollider;
 	
@@ -35,6 +39,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = LevelSegments)
 	TArray<TSubclassOf<ALevelSegment>> SegmentBlueprints;
+	
+	UPROPERTY(BlueprintReadWrite)
+	TObjectPtr<UInGameWidget> InGameWidget;
 
 protected:
 	virtual void BeginPlay() override;
@@ -51,6 +58,8 @@ protected:
 	UFUNCTION()
 	void StopMovingSegments();
 	bool bCanMoveSegments;
+
+	void UpdateInGameWidgetValues();
 
 public:	
 	virtual void Tick(float DeltaTime) override;
