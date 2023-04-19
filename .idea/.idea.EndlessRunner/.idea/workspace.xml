@@ -12,7 +12,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/../../EpicGames/UE_5.1/Engine/Source/Runtime/Engine/Classes/GameFramework/CharacterMovementComponent.h" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../EpicGames/UE_5.1/Engine/Source/Runtime/Engine/Classes/GameFramework/CharacterMovementComponent.h" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -156,6 +156,9 @@
       <workItem from="1681216822581" duration="22321000" />
       <workItem from="1681303719728" duration="3877000" />
       <workItem from="1681384785159" duration="7866000" />
+      <workItem from="1681730933564" duration="6959000" />
+      <workItem from="1681805788173" duration="15342000" />
+      <workItem from="1681892472052" duration="9902000" />
     </task>
     <servers />
   </component>

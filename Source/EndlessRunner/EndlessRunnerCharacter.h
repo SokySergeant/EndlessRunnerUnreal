@@ -3,12 +3,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "InputActionValue.h"
-#include "MyGameInstance.h"
 #include "EndlessRunnerCharacter.generated.h"
 
-class USpringArmComponent;
-class UCameraComponent;
+struct FInputActionValue;
+class UMyGameInstance;
 class UInputAction;
 class UInputMappingContext;
 
@@ -20,12 +18,7 @@ class AEndlessRunnerCharacter : public ACharacter
 	//MoveTimer
 	FTimerHandle MoveToLaneHandle;
 
-	//Camera
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<USpringArmComponent> CameraBoom;
-	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UCameraComponent> FollowCamera;
+	DECLARE_DELEGATE(OnPlayerDeathDelegate);
 	
 	//InputActions
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -48,7 +41,6 @@ public:
 	AEndlessRunnerCharacter();
 
 protected:
-	//Input
 	void Move(const FInputActionValue& Value);
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	
@@ -60,8 +52,12 @@ protected:
 	float TargetYValue;
 	void MoveToLane();
 
+	int MaxHp = 3;
+	int CurrentHp;
+
 public:
-	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	void UpdateHealthBy(int Hp);
+
+	OnPlayerDeathDelegate OnPlayerDeath;
 };
 
