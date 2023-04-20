@@ -92,9 +92,9 @@ void AEndlessRunnerCharacter::UpdateHealthBy(float Hp)
 	CurrentHp += Hp;
 	CurrentHp = FMath::Clamp(CurrentHp, 0, MaxHp);
 	
-	if(CurrentHp == 0)
+	if(CurrentHp == 0 && OnPlayerDeath.IsBound())
 	{
-		OnPlayerDeath.ExecuteIfBound();
+		OnPlayerDeath.Broadcast();
 	}
 
 	if(!InGameWidget) return;

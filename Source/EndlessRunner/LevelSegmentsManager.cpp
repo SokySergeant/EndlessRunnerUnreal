@@ -35,7 +35,7 @@ void ALevelSegmentsManager::BeginPlay()
 	}
 
 	TObjectPtr<AEndlessRunnerCharacter> Player = Cast<AEndlessRunnerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	Player->OnPlayerDeath.BindUObject(this, &ALevelSegmentsManager::StopMovingSegments);
+	Player->OnPlayerDeath.AddDynamic(this, &ALevelSegmentsManager::StopMovingSegments);
 	
 	StartMovingSegments();
 }

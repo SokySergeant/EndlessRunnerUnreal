@@ -26,7 +26,6 @@ void ALevelSegment::BeginPlay()
 
 void ALevelSegment::SetupSpawnables(float Difficulty)
 {
-	//int AmountOfSpawnables = FGenericPlatformMath::RoundToInt(Difficulty);
 	int AmountOfObstacles = Difficulty * Obstacles.FrequencyOfObstacles;
 
 	SetupObstacles(AmountOfObstacles);

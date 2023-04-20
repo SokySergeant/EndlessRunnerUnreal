@@ -10,18 +10,17 @@ class UMyGameInstance;
 class UInputAction;
 class UInputMappingContext;
 class UInGameWidget;
+class UGameOverWidget;
 
 UCLASS(config=Game)
 class AEndlessRunnerCharacter : public ACharacter
 {
 	GENERATED_BODY()
-
-	//MoveTimer
+	
 	FTimerHandle MoveToLaneHandle;
 
-	DECLARE_DELEGATE(OnPlayerDeathDelegate);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerDeathDelegate);
 	
-	//InputActions
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputMappingContext> DefaultMappingContext;
 	
@@ -30,8 +29,7 @@ class AEndlessRunnerCharacter : public ACharacter
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> MoveAction;
-
-	//Other values
+	
 	UPROPERTY(EditAnywhere)
 	float LaneChangeTolerance;
 	
@@ -62,6 +60,7 @@ public:
 	
 	void UpdateHealthBy(float Hp);
 
-	OnPlayerDeathDelegate OnPlayerDeath;
+	UPROPERTY(BlueprintAssignable)
+	FOnPlayerDeathDelegate OnPlayerDeath;
 };
 
