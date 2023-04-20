@@ -54,7 +54,6 @@ void ALevelSegmentsManager::Tick(float DeltaTime)
 		CurrentlyActiveSegments[i]->AddActorLocalOffset(FVector(-ScrollSpeed, 0, 0));
 	}
 
-	if(InGameWidget == nullptr) return;
 	UpdateInGameWidgetValues();
 }
 
@@ -105,6 +104,8 @@ void ALevelSegmentsManager::StopMovingSegments()
 
 void ALevelSegmentsManager::UpdateInGameWidgetValues()
 {
+	if(!InGameWidget) return;
+	
 	float Score = (ScrollSpeed + Difficulty) * ScoreMultiplier;
 	InGameWidget->ScoreText->SetText(FText::AsNumber(Score));
 

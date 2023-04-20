@@ -5,7 +5,9 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "InGameWidget.h"
 #include "MyGameInstance.h"
+#include "Components/ProgressBar.h"
 
 AEndlessRunnerCharacter::AEndlessRunnerCharacter()
 {
@@ -85,15 +87,16 @@ void AEndlessRunnerCharacter::MoveToLane()
 	}
 }
 
-void AEndlessRunnerCharacter::UpdateHealthBy(int Hp)
+void AEndlessRunnerCharacter::UpdateHealthBy(float Hp)
 {
 	CurrentHp += Hp;
-
-	UE_LOG(LogTemp, Warning, TEXT("HP is at: %d"), CurrentHp);
-
-	if(CurrentHp <= 0)
+	CurrentHp = FMath::Clamp(CurrentHp, 0, MaxHp);
+	
+	if(CurrentHp == 0)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Died!"));
 		OnPlayerDeath.ExecuteIfBound();
 	}
+
+	if(!InGameWidget) return;
+	InGameWidget->HealthProgressBar->SetPercent(CurrentHp / MaxHp);
 }

@@ -6,6 +6,7 @@
 #include "InGameWidget.generated.h"
 
 class UTextBlock;
+class UProgressBar;
 
 UCLASS()
 class ENDLESSRUNNER_API UInGameWidget : public UUserWidget
@@ -21,4 +22,7 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UTextBlock> SpeedText;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UProgressBar> HealthProgressBar;
 };

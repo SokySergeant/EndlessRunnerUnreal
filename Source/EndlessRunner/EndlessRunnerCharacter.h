@@ -9,6 +9,7 @@ struct FInputActionValue;
 class UMyGameInstance;
 class UInputAction;
 class UInputMappingContext;
+class UInGameWidget;
 
 UCLASS(config=Game)
 class AEndlessRunnerCharacter : public ACharacter
@@ -52,11 +53,14 @@ protected:
 	float TargetYValue;
 	void MoveToLane();
 
-	int MaxHp = 3;
-	int CurrentHp;
+	float MaxHp = 3;
+	float CurrentHp;
 
 public:
-	void UpdateHealthBy(int Hp);
+	UPROPERTY(BlueprintReadWrite)
+	TObjectPtr<UInGameWidget> InGameWidget;
+	
+	void UpdateHealthBy(float Hp);
 
 	OnPlayerDeathDelegate OnPlayerDeath;
 };

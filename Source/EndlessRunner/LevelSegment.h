@@ -8,17 +8,36 @@
 class UBoxComponent;
 class AObstacle;
 class UMyGameInstance;
+class APickupBase;
 
 USTRUCT()
-struct FObstacleStruct
+struct FObstaclesStruct
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<AObstacle> ObstacleBlueprint;
+	TArray<TSubclassOf<AObstacle>> ObstacleBlueprints;
 
-	UPROPERTY(EditAnywhere, meta = (UIMin = "0.0", UIMax = "1.0"))
-	float Frequency;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<AActor>> SpawnedObstacles;
+
+	UPROPERTY(EditAnywhere)
+	float FrequencyOfObstacles;
+};
+
+USTRUCT()
+struct FPickupsStruct
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere)
+	TArray<TSubclassOf<APickupBase>> PickupBlueprints;
+
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<AActor>> SpawnedPickups;
+
+	UPROPERTY(EditAnywhere)
+	float FrequencyOfPickups;
 };
 
 UCLASS()
@@ -33,9 +52,10 @@ class ENDLESSRUNNER_API ALevelSegment : public AActor
 	TObjectPtr<USceneComponent> EndLocationComponent;
 
 	UPROPERTY(EditAnywhere, Category = Spawnables)
-	TArray<FObstacleStruct> Obstacles;
+	FObstaclesStruct Obstacles;
 
-	TArray<TObjectPtr<AActor>> SpawnedObstacles;
+	UPROPERTY(EditAnywhere, Category = Spawnables)
+	FPickupsStruct Pickups;
 	
 	TObjectPtr<UMyGameInstance> MyGameInstance;
 	
@@ -47,9 +67,10 @@ protected:
 
 	FVector GetRandomLocationWithinSegmentBounds();
 
-public:	
-	virtual void Tick(float DeltaTime) override;
+	void SetupObstacles(int AmountOfObstacles);
+	void SetupPickups(int AmountOfPickups);
 
+public:	
 	FVector GetEndLocation() {return EndLocationComponent->GetComponentLocation();};
 
 	void SetupSpawnables(float Difficulty);

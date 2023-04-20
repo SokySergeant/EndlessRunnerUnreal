@@ -12,6 +12,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://C:/Program Files (x86)/Windows Kits/10/Include/10.0.19041.0/ucrt/stdlib.h" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../EpicGames/UE_5.1/Engine/Source/Runtime/Engine/Classes/GameFramework/CharacterMovementComponent.h" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
@@ -159,6 +160,8 @@
       <workItem from="1681730933564" duration="6959000" />
       <workItem from="1681805788173" duration="15342000" />
       <workItem from="1681892472052" duration="15204000" />
+      <workItem from="1681979289556" duration="695000" />
+      <workItem from="1681980748890" duration="11869000" />
     </task>
     <servers />
   </component>
