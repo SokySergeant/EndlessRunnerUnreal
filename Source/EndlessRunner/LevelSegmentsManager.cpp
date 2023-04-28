@@ -20,6 +20,8 @@ ALevelSegmentsManager::ALevelSegmentsManager()
 	ScrollSpeedIncreaseRate = 1.f;
 	DifficultyIncreaseRate = 1.f;
 	ScoreMultiplier = 1.f;
+	
+	MyPlayerIndex = 0;
 }
 
 void ALevelSegmentsManager::BeginPlay()
@@ -33,9 +35,13 @@ void ALevelSegmentsManager::BeginPlay()
 	{
 		SpawnLevelSegment(CurrentlyActiveSegments[i]->GetEndLocation());
 	}
-
-	TObjectPtr<AEndlessRunnerCharacter> Player = Cast<AEndlessRunnerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	Player->OnPlayerDeath.AddDynamic(this, &ALevelSegmentsManager::StopMovingSegments);
+	
+	TObjectPtr<AEndlessRunnerCharacter> MyPlayer = Cast<AEndlessRunnerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), MyPlayerIndex));
+	if(MyPlayer)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AAAAAAAAAAAAAAAAAAA"))
+		MyPlayer->OnPlayerDeath.AddDynamic(this, &ALevelSegmentsManager::StopMovingSegments);
+	}
 	
 	StartMovingSegments();
 }
@@ -64,7 +70,8 @@ void ALevelSegmentsManager::SpawnLevelSegment(FVector SpawnPos)
 	FActorSpawnParameters SpawnParams;
 	FRotator SpawnRot = GetActorRotation();
 	int RandomSegmentIndex = FMath::RandRange(0, (SegmentBlueprints.Num() - 1));
-	CurrentlyActiveSegments.Add(GetWorld()->SpawnActor<ALevelSegment>(SegmentBlueprints[RandomSegmentIndex], SpawnPos, SpawnRot, SpawnParams));
+	TObjectPtr<ALevelSegment> TempSegment = GetWorld()->SpawnActor<ALevelSegment>(SegmentBlueprints[RandomSegmentIndex], SpawnPos, SpawnRot, SpawnParams);
+	CurrentlyActiveSegments.Add(TempSegment);
 }
 
 void ALevelSegmentsManager::OnBoxColliderOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& Hit)

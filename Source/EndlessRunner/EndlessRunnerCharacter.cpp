@@ -6,7 +6,6 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InGameWidget.h"
-#include "MyGameInstance.h"
 #include "Components/ProgressBar.h"
 
 AEndlessRunnerCharacter::AEndlessRunnerCharacter()
@@ -45,7 +44,9 @@ void AEndlessRunnerCharacter::BeginPlay()
 		}
 	}
 
-	MyGameInstance = Cast<UMyGameInstance>(GetGameInstance());
+	LaneYValues.Add(GetActorLocation().Y - 300.f);
+	LaneYValues.Add(GetActorLocation().Y);
+	LaneYValues.Add(GetActorLocation().Y + 300.f);
 }
 
 void AEndlessRunnerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -65,12 +66,12 @@ void AEndlessRunnerCharacter::Move(const FInputActionValue& Value)
 	float MovementVector = Value.Get<float>();
 	
 	if(MovementVector < 0.f && CurrentLane <= 0) return; //tried moving left while in the leftmost lane
-	if(MovementVector > 0.f && CurrentLane >= MyGameInstance->LaneYValues.Num() - 1) return; //tried moving right while in the rightmost lane
+	if(MovementVector > 0.f && CurrentLane >= LaneYValues.Num() - 1) return; //tried moving right while in the rightmost lane
 	
 	CurrentLane += FMath::Sign(MovementVector);
 
 	//get target y value of new lane
-	TargetYValue = MyGameInstance->LaneYValues[CurrentLane];
+	TargetYValue = LaneYValues[CurrentLane];
 	
 	GetWorld()->GetTimerManager().SetTimer(MoveToLaneHandle, this, &AEndlessRunnerCharacter::MoveToLane, GetWorld()->GetDeltaSeconds(), true);
 }

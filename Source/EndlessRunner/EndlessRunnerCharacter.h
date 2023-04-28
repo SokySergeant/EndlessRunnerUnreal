@@ -45,14 +45,14 @@ protected:
 	
 	virtual void BeginPlay();
 
-	TObjectPtr<UMyGameInstance> MyGameInstance;
-
 	int CurrentLane;
 	float TargetYValue;
 	void MoveToLane();
 
 	float MaxHp = 3;
 	float CurrentHp;
+
+	TArray<float> LaneYValues;
 
 public:
 	UPROPERTY(BlueprintReadWrite)

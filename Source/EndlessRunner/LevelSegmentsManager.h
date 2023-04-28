@@ -8,31 +8,35 @@
 class ALevelSegment;
 class UBoxComponent;
 class UInGameWidget;
+class AEndlessRunnerCharacter;
 
 UCLASS()
 class ENDLESSRUNNER_API ALevelSegmentsManager : public AActor
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, Category = LevelSegments)
+	UPROPERTY(EditAnywhere, Category = LevelSegmentsManager)
 	float ScrollSpeed;
 	
-	UPROPERTY(EditAnywhere, Category = LevelSegments)
+	UPROPERTY(EditAnywhere, Category = LevelSegmentsManager)
 	float ScrollSpeedIncreaseRate;
 
-	UPROPERTY(VisibleAnywhere, Category = LevelSegments)
+	UPROPERTY(VisibleAnywhere, Category = LevelSegmentsManager)
 	float Difficulty;
 	
-	UPROPERTY(EditAnywhere, Category = LevelSegments)
+	UPROPERTY(EditAnywhere, Category = LevelSegmentsManager)
 	float DifficultyIncreaseRate;
 
-	UPROPERTY(EditAnywhere, Category = LevelSegments)
+	UPROPERTY(EditAnywhere, Category = LevelSegmentsManager)
 	float ScoreMultiplier;
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UBoxComponent> BoxCollider;
 	
 	TArray<TObjectPtr<ALevelSegment>> CurrentlyActiveSegments;
+
+	UPROPERTY(EditAnywhere, Category = LevelSegmentsManager)
+	int MyPlayerIndex;
 	
 public:	
 	ALevelSegmentsManager();
@@ -57,6 +61,7 @@ protected:
 	void StartMovingSegments();
 	UFUNCTION()
 	void StopMovingSegments();
+	
 	bool bCanMoveSegments;
 
 	void UpdateInGameWidgetValues();

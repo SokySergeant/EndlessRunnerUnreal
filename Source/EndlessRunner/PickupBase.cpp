@@ -7,7 +7,7 @@
 APickupBase::APickupBase()
 {
 	RootSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootSceneComponent"));
-	RootSceneComponent->SetupAttachment(RootComponent);
+	RootComponent = RootSceneComponent;
 	
     BoxCollider = CreateDefaultSubobject<UBoxComponent>("BoxColliderComponent");
 	BoxCollider->SetBoxExtent(FVector(100.f, 100.f, 100.f));
@@ -19,6 +19,8 @@ APickupBase::APickupBase()
 	StaticMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
 	StaticMesh->SetGenerateOverlapEvents(false);
 	StaticMesh->SetupAttachment(BoxCollider);
+	
+	bIsSelfHidden = false;
 }
 
 void APickupBase::OnBoxColliderOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& Hit)
@@ -28,11 +30,27 @@ void APickupBase::OnBoxColliderOverlap(UPrimitiveComponent* OverlappedComponent,
 	if(Player)
 	{
 		OnPickup(Player);
-		SetActorHiddenInGame(true);
+		HideSelf();
 	}
 }
 
 void APickupBase::OnPickup(TObjectPtr<AEndlessRunnerCharacter> Player)
 {
 	
+}
+
+void APickupBase::HideSelf()
+{
+	BoxCollider->SetHiddenInGame(true);
+	StaticMesh->SetHiddenInGame(true);
+	
+	bIsSelfHidden = true;
+}
+
+void APickupBase::ShowSelf()
+{
+	BoxCollider->SetHiddenInGame(false);
+	StaticMesh->SetHiddenInGame(false);
+	
+	bIsSelfHidden = false;
 }
