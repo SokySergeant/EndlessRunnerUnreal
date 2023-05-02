@@ -30,22 +30,29 @@ class ENDLESSRUNNER_API ALevelSegmentsManager : public AActor
 	UPROPERTY(EditAnywhere, Category = LevelSegmentsManager)
 	float ScoreMultiplier;
 
+	UPROPERTY(EditAnywhere, Category = LevelSegmentsManager)
+	TArray<TSubclassOf<ALevelSegment>> SegmentBlueprints;
+
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UBoxComponent> BoxCollider;
 	
 	TArray<TObjectPtr<ALevelSegment>> CurrentlyActiveSegments;
 
-	UPROPERTY(EditAnywhere, Category = LevelSegmentsManager)
-	int MyPlayerIndex;
+	void SpawnInitialSegments();
+	void MoveSegments(float Increment);
 	
 public:	
 	ALevelSegmentsManager();
-
-	UPROPERTY(EditAnywhere, Category = LevelSegments)
-	TArray<TSubclassOf<ALevelSegment>> SegmentBlueprints;
 	
 	UPROPERTY(BlueprintReadWrite)
 	TObjectPtr<UInGameWidget> InGameWidget;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<AEndlessRunnerCharacter> MyPlayer;
+
+	void BindToOnPlayerDeath();
+
+	void SaveHighScore(int PlayerNum);
 
 protected:
 	virtual void BeginPlay() override;

@@ -12,6 +12,7 @@ ALevelSegmentsManager::ALevelSegmentsManager()
 	PrimaryActorTick.bCanEverTick = true;
 	
 	BoxCollider = CreateDefaultSubobject<UBoxComponent>("Box Collider");
+	RootComponent = BoxCollider;
 	BoxCollider->SetBoxExtent(FVector(100.f, 100.f, 100.f));
 	BoxCollider->SetCollisionResponseToAllChannels(ECR_Overlap);
 	BoxCollider->OnComponentBeginOverlap.AddDynamic(this, &ALevelSegmentsManager::OnBoxColliderOverlap);
@@ -20,8 +21,6 @@ ALevelSegmentsManager::ALevelSegmentsManager()
 	ScrollSpeedIncreaseRate = 1.f;
 	DifficultyIncreaseRate = 1.f;
 	ScoreMultiplier = 1.f;
-	
-	MyPlayerIndex = 0;
 }
 
 void ALevelSegmentsManager::BeginPlay()
@@ -30,20 +29,17 @@ void ALevelSegmentsManager::BeginPlay()
 	
 	Difficulty = 1.f;
 	
+	SpawnInitialSegments();
+	StartMovingSegments();
+}
+
+void ALevelSegmentsManager::SpawnInitialSegments()
+{
 	SpawnLevelSegment(GetActorLocation() + FVector(3000.f, 0.f, 0.f));
 	for(int i = 0; i < 20; i++)
 	{
 		SpawnLevelSegment(CurrentlyActiveSegments[i]->GetEndLocation());
 	}
-	
-	TObjectPtr<AEndlessRunnerCharacter> MyPlayer = Cast<AEndlessRunnerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), MyPlayerIndex));
-	if(MyPlayer)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("AAAAAAAAAAAAAAAAAAA"))
-		MyPlayer->OnPlayerDeath.AddDynamic(this, &ALevelSegmentsManager::StopMovingSegments);
-	}
-	
-	StartMovingSegments();
 }
 
 void ALevelSegmentsManager::Tick(float DeltaTime)
@@ -52,15 +48,19 @@ void ALevelSegmentsManager::Tick(float DeltaTime)
 
 	if(!bCanMoveSegments) return;
 
-	Difficulty += DeltaTime * DifficultyIncreaseRate;
-	ScrollSpeed += DeltaTime * ScrollSpeedIncreaseRate;
+	MoveSegments(DeltaTime);
+	UpdateInGameWidgetValues();
+}
+
+void ALevelSegmentsManager::MoveSegments(float Increment)
+{
+	Difficulty += Increment * DifficultyIncreaseRate;
+	ScrollSpeed += Increment * ScrollSpeedIncreaseRate;
 
 	for(int i = 0; i < CurrentlyActiveSegments.Num(); i++)
 	{
 		CurrentlyActiveSegments[i]->AddActorLocalOffset(FVector(-ScrollSpeed, 0, 0));
 	}
-
-	UpdateInGameWidgetValues();
 }
 
 void ALevelSegmentsManager::SpawnLevelSegment(FVector SpawnPos)
@@ -109,12 +109,35 @@ void ALevelSegmentsManager::StopMovingSegments()
 	bCanMoveSegments = false;
 }
 
+void ALevelSegmentsManager::BindToOnPlayerDeath()
+{
+	MyPlayer->OnPlayerDeath.AddDynamic(this, &ALevelSegmentsManager::StopMovingSegments);
+}
+
 void ALevelSegmentsManager::UpdateInGameWidgetValues()
 {
 	if(!InGameWidget) return;
 	
 	float Score = (ScrollSpeed + Difficulty) * ScoreMultiplier;
-	InGameWidget->ScoreText->SetText(FText::AsNumber(Score));
 
-	InGameWidget->SpeedText->SetText(FText::AsNumber(ScrollSpeed));
+	if(MyPlayer->bIsFirstPlayer)
+	{
+		InGameWidget->P1ScoreText->SetText(FText::AsNumber(Score));
+		InGameWidget->P1SpeedText->SetText(FText::AsNumber(ScrollSpeed));
+	}else
+	{
+		InGameWidget->P2ScoreText->SetText(FText::AsNumber(Score));
+		InGameWidget->P2SpeedText->SetText(FText::AsNumber(ScrollSpeed));
+	}
+}
+
+void ALevelSegmentsManager::SaveHighScore(int PlayerNum)
+{
+	if(PlayerNum == 0)
+	{
+		//save high score to p1
+	}else if(PlayerNum == 1)
+	{
+		//save high score to p2
+	}
 }

@@ -15,14 +15,26 @@ class ENDLESSRUNNER_API UInGameWidget : public UUserWidget
 
 public:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UTextBlock> ScoreText;
+	TObjectPtr<UTextBlock> P1ScoreText;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UTextBlock> HighScoreText;
+	TObjectPtr<UTextBlock> P1HighScoreText;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UTextBlock> SpeedText;
+	TObjectPtr<UTextBlock> P1SpeedText;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UProgressBar> HealthProgressBar;
+	TObjectPtr<UProgressBar> P1HealthProgressBar;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UTextBlock> P2ScoreText;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UTextBlock> P2HighScoreText;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UTextBlock> P2SpeedText;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UProgressBar> P2HealthProgressBar;
 };

@@ -1,6 +1,5 @@
 
 #include "LevelSegment.h"
-#include "MyGameInstance.h"
 #include "Obstacle.h"
 #include "PickupBase.h"
 #include "Components/BoxComponent.h"

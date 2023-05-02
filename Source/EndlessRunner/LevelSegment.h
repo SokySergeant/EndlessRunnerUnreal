@@ -28,7 +28,7 @@ struct FObstaclesStruct
 	int MaxObstacleAmount;
 
 	UPROPERTY(EditAnywhere, meta = (UIMin = "0.0", UIMax = "1.0"))
-	float ChanceForFurtherObstacleToExplodeWhenOneIsDodged;
+	float ChanceForFurtherObstacleToExplodeWhenOneIsDodged; //I'm sorry, I couldn't find a shorter name
 };
 
 USTRUCT()

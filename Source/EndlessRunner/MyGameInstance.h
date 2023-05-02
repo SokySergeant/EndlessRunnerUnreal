@@ -11,6 +11,6 @@ class ENDLESSRUNNER_API UMyGameInstance : public UGameInstance
 	GENERATED_BODY()
 
 public:
-	float Score = 0.f;
-	float HighScore = 0.f;
+	float P1HighScore = 0.f;
+	float P2HighScore = 0.f;
 };
