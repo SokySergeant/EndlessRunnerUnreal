@@ -17,6 +17,8 @@ ALevelSegmentsManager::ALevelSegmentsManager()
 	BoxCollider->SetCollisionResponseToAllChannels(ECR_Overlap);
 	BoxCollider->OnComponentBeginOverlap.AddDynamic(this, &ALevelSegmentsManager::OnBoxColliderOverlap);
 
+	LevelSegmentPoolSize = 5;
+	
 	ScrollSpeed = 25.f;
 	ScrollSpeedIncreaseRate = 1.f;
 	DifficultyIncreaseRate = 1.f;
@@ -38,7 +40,7 @@ void ALevelSegmentsManager::StartSetup()
 void ALevelSegmentsManager::SpawnInitialSegments()
 {
 	SpawnLevelSegment(GetActorLocation() + FVector(3000.f, 0.f, 0.f));
-	for(int i = 0; i < 20; i++)
+	for(int i = 0; i < LevelSegmentPoolSize; i++)
 	{
 		SpawnLevelSegment(CurrentlyActiveSegments[i]->GetEndLocation());
 	}

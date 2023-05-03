@@ -31,6 +31,9 @@ class ENDLESSRUNNER_API ALevelSegmentsManager : public AActor
 	float ScoreMultiplier;
 
 	UPROPERTY(EditAnywhere, Category = LevelSegmentsManager)
+	int LevelSegmentPoolSize;
+
+	UPROPERTY(EditAnywhere, Category = LevelSegmentsManager)
 	TArray<TSubclassOf<ALevelSegment>> SegmentBlueprints;
 
 	UPROPERTY(EditAnywhere)

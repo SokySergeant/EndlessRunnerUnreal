@@ -54,3 +54,8 @@ void APickupBase::ShowSelf()
 	
 	bIsSelfHidden = false;
 }
+
+void APickupBase::ResetSelf()
+{
+	ShowSelf();
+}

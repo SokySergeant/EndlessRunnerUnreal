@@ -43,7 +43,7 @@ void ALevelSegment::SetupObstacles(int AmountOfObstacles)
 	for(int i = 0; i < Obstacles.SpawnedObstacles.Num(); i++)
 	{
 		Obstacles.SpawnedObstacles[i]->SetActorLocation(GetRandomLocationWithinSegmentBounds());
-		Obstacles.SpawnedObstacles[i]->ShowSelf();
+		Obstacles.SpawnedObstacles[i]->ResetSelf();
 	}
 
 	if(Obstacles.SpawnedObstacles.Num() >= Obstacles.MaxObstacleAmount) return;
@@ -52,7 +52,7 @@ void ALevelSegment::SetupObstacles(int AmountOfObstacles)
 	{
 		FActorSpawnParameters SpawnParams;
 		int RandomObstacleIndex = FMath::RandRange(0, (Obstacles.ObstacleBlueprints.Num() - 1));
-		TObjectPtr<AObstacle> SpawnedObstacle = GetWorld()->SpawnActor<AObstacle>(Obstacles.ObstacleBlueprints[RandomObstacleIndex], GetActorLocation(), GetActorRotation(), SpawnParams);
+		TObjectPtr<AObstacle> SpawnedObstacle = GetWorld()->SpawnActor<AObstacle>(Obstacles.ObstacleBlueprints[RandomObstacleIndex], GetRandomLocationWithinSegmentBounds(), GetActorRotation(), SpawnParams);
 		SpawnedObstacle->OnObstacleDodged.AddDynamic(this, &ALevelSegment::OnObstacleDodged);
 		SpawnedObstacle->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
 		Obstacles.SpawnedObstacles.Add(SpawnedObstacle);
@@ -63,19 +63,19 @@ void ALevelSegment::SetupPickups(int AmountOfPickups)
 {
 	if(Pickups.PickupBlueprints.IsEmpty()) return;
 
+	for(int i = 0; i < Pickups.SpawnedPickups.Num(); i++)
+	{
+		Pickups.SpawnedPickups[i]->SetActorLocation(GetRandomLocationWithinSegmentBounds());
+		Pickups.SpawnedPickups[i]->ResetSelf();
+	}
+	
 	while(Pickups.SpawnedPickups.Num() < AmountOfPickups)
 	{
 		FActorSpawnParameters SpawnParams;
 		int RandomPickupIndex = FMath::RandRange(0, (Pickups.PickupBlueprints.Num() - 1));
-		TObjectPtr<APickupBase> SpawnedPickup = GetWorld()->SpawnActor<APickupBase>(Pickups.PickupBlueprints[RandomPickupIndex], GetActorLocation(), GetActorRotation(), SpawnParams);
+		TObjectPtr<APickupBase> SpawnedPickup = GetWorld()->SpawnActor<APickupBase>(Pickups.PickupBlueprints[RandomPickupIndex], GetRandomLocationWithinSegmentBounds(), GetActorRotation(), SpawnParams);
 		SpawnedPickup->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
 		Pickups.SpawnedPickups.Add(SpawnedPickup);
-	}
-	
-	for(int i = 0; i < Pickups.SpawnedPickups.Num(); i++)
-	{
-		Pickups.SpawnedPickups[i]->SetActorLocation(GetRandomLocationWithinSegmentBounds());
-		Pickups.SpawnedPickups[i]->ShowSelf();
 	}
 }
 

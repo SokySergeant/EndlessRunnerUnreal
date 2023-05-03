@@ -34,6 +34,9 @@ private:
 protected:
 	virtual void OnPickup(TObjectPtr<AEndlessRunnerCharacter> Player) override;
 
+	UPROPERTY(EditAnywhere)
+	bool bCanTriggerExplosionInOtherObstacle;
+
 public:
 	AObstacle();
 };

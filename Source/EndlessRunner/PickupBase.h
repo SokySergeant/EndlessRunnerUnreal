@@ -19,8 +19,9 @@ public:
 
 	void HideSelf();
 	void ShowSelf();
-
 	bool bIsSelfHidden;
+
+	virtual void ResetSelf();
 
 private:
 	UPROPERTY(EditAnywhere)
