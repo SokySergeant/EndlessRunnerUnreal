@@ -129,13 +129,13 @@ void ALevelSegmentsManager::UpdateInGameWidgetValues()
 
 	if(MyPlayer->bIsFirstPlayer)
 	{
-		InGameWidget->P1ScoreText->SetText(FText::AsNumber(Score));
-		InGameWidget->P1HighScoreText->SetText(FText::AsNumber(HighScore));
-		InGameWidget->P1SpeedText->SetText(FText::AsNumber(ScrollSpeed));
+		InGameWidget->P1ScoreText->SetText(FText::AsNumber(FMath::TruncToInt(Score)));
+		InGameWidget->P1HighScoreText->SetText(FText::AsNumber(FMath::TruncToInt(HighScore)));
+		InGameWidget->P1SpeedText->SetText(FText::AsNumber(FMath::TruncToInt(ScrollSpeed)));
 	}else
 	{
-		InGameWidget->P2ScoreText->SetText(FText::AsNumber(Score));
-		InGameWidget->P2HighScoreText->SetText(FText::AsNumber(HighScore));
-		InGameWidget->P2SpeedText->SetText(FText::AsNumber(ScrollSpeed));
+		InGameWidget->P2ScoreText->SetText(FText::AsNumber(FMath::TruncToInt(Score)));
+		InGameWidget->P2HighScoreText->SetText(FText::AsNumber(FMath::TruncToInt(HighScore)));
+		InGameWidget->P2SpeedText->SetText(FText::AsNumber(FMath::TruncToInt(ScrollSpeed)));
 	}
 }
