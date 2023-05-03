@@ -45,8 +45,6 @@ class ENDLESSRUNNER_API ALevelSegmentsManager : public AActor
 	void MoveSegments(float Increment);
 	void UpdateScoreValues();
 	void UpdateInGameWidgetValues();
-
-	float Score;
 	
 public:	
 	ALevelSegmentsManager();
@@ -59,6 +57,7 @@ public:
 
 	void StartSetup();
 
+	float Score;
 	float HighScore;
 
 protected:

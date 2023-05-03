@@ -10,6 +10,8 @@
 #include "MySaveGame.h"
 #include "Components/ProgressBar.h"
 #include "Kismet/GameplayStatics.h"
+#include "GameOverWidget.h"
+#include "Components/TextBlock.h"
 
 AEndlessRunnerCharacter::AEndlessRunnerCharacter()
 {
@@ -214,9 +216,19 @@ void AEndlessRunnerCharacter::EndGameIfBothPlayersDied()
 	EnhancedInputComponent->ClearActionBindings();
 	
 	SaveData();
-	
-	TObjectPtr<UUserWidget> GameOverWidget = CreateWidget(GetWorld(), GameOverWidgetBlueprint);
+
+	//show and setup game over widget
+	TObjectPtr<UGameOverWidget> GameOverWidget = Cast<UGameOverWidget>(CreateWidget(GetWorld(), GameOverWidgetBlueprint));
 	GameOverWidget->AddToViewport();
+
+	if(MyLevelSegmentManager->Score > Player2->MyLevelSegmentManager->Score)
+	{
+		GameOverWidget->GameOverInfoText->SetText(FText::FromString("Player 1 won!"));
+	}else
+	{
+		GameOverWidget->GameOverInfoText->SetText(FText::FromString("Player 2 won!"));
+	}
+	
 	Cast<APlayerController>(GetController())->bShowMouseCursor = true;
 }
 

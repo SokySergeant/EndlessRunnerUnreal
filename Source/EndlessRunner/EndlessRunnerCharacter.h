@@ -6,11 +6,9 @@
 #include "EndlessRunnerCharacter.generated.h"
 
 struct FInputActionValue;
-class UMyGameInstance;
 class UInputAction;
 class UInputMappingContext;
 class UInGameWidget;
-class UGameOverWidget;
 class ALevelSegmentsManager;
 class UMySaveGame;
 
