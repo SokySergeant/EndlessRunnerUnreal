@@ -21,11 +21,13 @@ ALevelSegmentsManager::ALevelSegmentsManager()
 	ScrollSpeedIncreaseRate = 1.f;
 	DifficultyIncreaseRate = 1.f;
 	ScoreMultiplier = 1.f;
+
+	HighScore = 0.f;
 }
 
-void ALevelSegmentsManager::BeginPlay()
+void ALevelSegmentsManager::StartSetup()
 {
-	Super::BeginPlay();
+	MyPlayer->OnPlayerDeath.AddDynamic(this, &ALevelSegmentsManager::StopMovingSegments);
 	
 	Difficulty = 1.f;
 	
@@ -49,6 +51,7 @@ void ALevelSegmentsManager::Tick(float DeltaTime)
 	if(!bCanMoveSegments) return;
 
 	MoveSegments(DeltaTime);
+	UpdateScoreValues();
 	UpdateInGameWidgetValues();
 }
 
@@ -109,35 +112,28 @@ void ALevelSegmentsManager::StopMovingSegments()
 	bCanMoveSegments = false;
 }
 
-void ALevelSegmentsManager::BindToOnPlayerDeath()
+void ALevelSegmentsManager::UpdateScoreValues()
 {
-	MyPlayer->OnPlayerDeath.AddDynamic(this, &ALevelSegmentsManager::StopMovingSegments);
+	Score = (ScrollSpeed + Difficulty) * ScoreMultiplier;
+	if(Score > HighScore)
+	{
+		HighScore = Score;
+	}
 }
 
 void ALevelSegmentsManager::UpdateInGameWidgetValues()
 {
 	if(!InGameWidget) return;
-	
-	float Score = (ScrollSpeed + Difficulty) * ScoreMultiplier;
 
 	if(MyPlayer->bIsFirstPlayer)
 	{
 		InGameWidget->P1ScoreText->SetText(FText::AsNumber(Score));
+		InGameWidget->P1HighScoreText->SetText(FText::AsNumber(HighScore));
 		InGameWidget->P1SpeedText->SetText(FText::AsNumber(ScrollSpeed));
 	}else
 	{
 		InGameWidget->P2ScoreText->SetText(FText::AsNumber(Score));
+		InGameWidget->P2HighScoreText->SetText(FText::AsNumber(HighScore));
 		InGameWidget->P2SpeedText->SetText(FText::AsNumber(ScrollSpeed));
-	}
-}
-
-void ALevelSegmentsManager::SaveHighScore(int PlayerNum)
-{
-	if(PlayerNum == 0)
-	{
-		//save high score to p1
-	}else if(PlayerNum == 1)
-	{
-		//save high score to p2
 	}
 }

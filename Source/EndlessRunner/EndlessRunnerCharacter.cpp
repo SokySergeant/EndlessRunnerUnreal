@@ -7,7 +7,9 @@
 #include "EnhancedInputSubsystems.h"
 #include "InGameWidget.h"
 #include "LevelSegmentsManager.h"
+#include "MySaveGame.h"
 #include "Components/ProgressBar.h"
+#include "Kismet/GameplayStatics.h"
 
 AEndlessRunnerCharacter::AEndlessRunnerCharacter()
 {
@@ -36,6 +38,8 @@ void AEndlessRunnerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	LoadSavedData();
+
 	CurrentHp = MaxHp;
 	
 	SetupLanes();
@@ -46,6 +50,8 @@ void AEndlessRunnerCharacter::BeginPlay()
 	SetupMyLevelSegmentsManager();
 	SetupSecondPlayer();
 	SetupInput();
+
+	OnPlayerDeath.AddDynamic(this, &AEndlessRunnerCharacter::EndGameIfBothPlayersDied);
 }
 
 void AEndlessRunnerCharacter::SetupLanes()
@@ -67,8 +73,20 @@ void AEndlessRunnerCharacter::SetupMyLevelSegmentsManager()
 	FActorSpawnParameters SpawnParams;
 	MyLevelSegmentManager = GetWorld()->SpawnActor<ALevelSegmentsManager>(LevelSegmentManagerBlueprint, GetActorLocation() + FVector(-3500.f, 0.f, -240.f), GetActorRotation(), SpawnParams);
 	MyLevelSegmentManager->MyPlayer = this;
-	MyLevelSegmentManager->BindToOnPlayerDeath();
 	MyLevelSegmentManager->InGameWidget = InGameWidget;
+	
+	if(SavedData)
+	{
+		if(bIsFirstPlayer)
+		{
+			MyLevelSegmentManager->HighScore = SavedData->P1HighScore;
+		}else
+		{
+			MyLevelSegmentManager->HighScore = SavedData->P2HighScore;
+		}
+	}
+	
+	MyLevelSegmentManager->StartSetup();
 }
 
 void AEndlessRunnerCharacter::SetupSecondPlayer()
@@ -77,6 +95,7 @@ void AEndlessRunnerCharacter::SetupSecondPlayer()
 	Player2 = GetWorld()->SpawnActor<AEndlessRunnerCharacter>(Player2Blueprint, GetActorLocation() + FVector(0.f, 1000.f, 0.f), GetActorRotation(), SpawnParams);
 	Player2->InGameWidget = InGameWidget;
 	Player2->SetupMyLevelSegmentsManager();
+	Player2->OnPlayerDeath.AddDynamic(this, &AEndlessRunnerCharacter::EndGameIfBothPlayersDied);
 }
 
 void AEndlessRunnerCharacter::SetupInput()
@@ -180,20 +199,38 @@ void AEndlessRunnerCharacter::UpdateHealthBy(float Hp)
 
 void AEndlessRunnerCharacter::Die()
 {
+	SetActorHiddenInGame(true);
+	
 	if(OnPlayerDeath.IsBound())
 	{
 		OnPlayerDeath.Broadcast();
 	}
-	
-	if(bIsFirstPlayer)
-	{
-		EnhancedInputComponent->ClearActionBindings();
-		TObjectPtr<UUserWidget> GameOverWidget = CreateWidget(GetWorld(), GameOverWidgetBlueprint);
-		GameOverWidget->AddToViewport();
+}
 
-		MyLevelSegmentManager->SaveHighScore(0);
-		Player2->MyLevelSegmentManager->SaveHighScore(1);
-	}
+void AEndlessRunnerCharacter::EndGameIfBothPlayersDied()
+{
+	if(!IsHidden() || !Player2->IsHidden()) return; //if one of the players is still alive, return
 	
-	SetActorHiddenInGame(true);
+	EnhancedInputComponent->ClearActionBindings();
+	
+	SaveData();
+	
+	TObjectPtr<UUserWidget> GameOverWidget = CreateWidget(GetWorld(), GameOverWidgetBlueprint);
+	GameOverWidget->AddToViewport();
+	Cast<APlayerController>(GetController())->bShowMouseCursor = true;
+}
+
+void AEndlessRunnerCharacter::SaveData()
+{
+	TObjectPtr<UMySaveGame> SaveGameInstance = Cast<UMySaveGame>(UGameplayStatics::CreateSaveGameObject(UMySaveGame::StaticClass()));
+	
+	SaveGameInstance->P1HighScore = MyLevelSegmentManager->HighScore;
+	SaveGameInstance->P2HighScore = Player2->MyLevelSegmentManager->HighScore;
+
+	UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("FirstSaveSlot"), 0);
+}
+
+void AEndlessRunnerCharacter::LoadSavedData()
+{
+	SavedData = Cast<UMySaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("FirstSaveSlot"), 0));
 }

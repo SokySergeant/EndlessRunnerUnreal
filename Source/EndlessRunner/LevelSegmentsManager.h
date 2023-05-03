@@ -40,6 +40,10 @@ class ENDLESSRUNNER_API ALevelSegmentsManager : public AActor
 
 	void SpawnInitialSegments();
 	void MoveSegments(float Increment);
+	void UpdateScoreValues();
+	void UpdateInGameWidgetValues();
+
+	float Score;
 	
 public:	
 	ALevelSegmentsManager();
@@ -50,13 +54,11 @@ public:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<AEndlessRunnerCharacter> MyPlayer;
 
-	void BindToOnPlayerDeath();
+	void StartSetup();
 
-	void SaveHighScore(int PlayerNum);
+	float HighScore;
 
 protected:
-	virtual void BeginPlay() override;
-
 	void SpawnLevelSegment(FVector SpawnPos);
 	
 	UFUNCTION()
@@ -70,8 +72,6 @@ protected:
 	void StopMovingSegments();
 	
 	bool bCanMoveSegments;
-
-	void UpdateInGameWidgetValues();
 
 public:	
 	virtual void Tick(float DeltaTime) override;

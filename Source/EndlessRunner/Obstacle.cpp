@@ -26,7 +26,7 @@ void AObstacle::OnStaggeredBoxColliderOverlap(UPrimitiveComponent* OverlappedCom
 	
 	if(Player)
 	{
-		if(IsHidden()) return; //obstacle was hit
+		if(bIsSelfHidden) return; //obstacle was hit
 
 		if(OnObstacleDodged.IsBound())
 		{

@@ -12,6 +12,7 @@ class UInputMappingContext;
 class UInGameWidget;
 class UGameOverWidget;
 class ALevelSegmentsManager;
+class UMySaveGame;
 
 UCLASS(config=Game)
 class AEndlessRunnerCharacter : public ACharacter
@@ -85,6 +86,13 @@ protected:
 	float CurrentHp;
 
 	void Die();
+
+	UFUNCTION()
+	void EndGameIfBothPlayersDied();
+	
+	void SaveData();
+	void LoadSavedData();
+	TObjectPtr<UMySaveGame> SavedData;
 
 	TArray<float> LaneYValues;
 
