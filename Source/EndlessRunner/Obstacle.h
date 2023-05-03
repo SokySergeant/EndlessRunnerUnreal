@@ -2,32 +2,41 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "PickupBase.h"
 #include "Obstacle.generated.h"
 
 class UBoxComponent;
 
 UCLASS()
-class ENDLESSRUNNER_API AObstacle : public AActor
+class ENDLESSRUNNER_API AObstacle : public APickupBase
 {
 	GENERATED_BODY()
-	
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<USceneComponent> RootSceneComponent;
-	
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnObstacleDodgedDelegate);
+public:
+	FOnObstacleDodgedDelegate OnObstacleDodged;
+
+	void Explode();
+
+private:
 	UPROPERTY(EditAnywhere)
-	TObjectPtr<UBoxComponent> BoxCollider;
-	
-	UPROPERTY(EditAnywhere)
-	TObjectPtr<UStaticMeshComponent> StaticMesh;
+	TObjectPtr<UBoxComponent> StaggeredBoxCollider;
+
+	UFUNCTION()
+	void OnStaggeredBoxColliderOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& Hit);
 
 	UPROPERTY(EditAnywhere)
 	float Damage;
-	
-public:	
-	AObstacle();
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UParticleSystem> ExplosionParticleSystem;
 
 protected:
-	UFUNCTION()
-	void OnBoxColliderOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& Hit);
+	virtual void OnPickup(TObjectPtr<AEndlessRunnerCharacter> Player) override;
+
+	UPROPERTY(EditAnywhere)
+	bool bCanTriggerExplosionInOtherObstacle;
+
+public:
+	AObstacle();
 };

@@ -6,11 +6,11 @@
 #include "EndlessRunnerCharacter.generated.h"
 
 struct FInputActionValue;
-class UMyGameInstance;
 class UInputAction;
 class UInputMappingContext;
 class UInGameWidget;
-class UGameOverWidget;
+class ALevelSegmentsManager;
+class UMySaveGame;
 
 UCLASS(config=Game)
 class AEndlessRunnerCharacter : public ACharacter
@@ -23,12 +23,16 @@ class AEndlessRunnerCharacter : public ACharacter
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputMappingContext> DefaultMappingContext;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> Player1MoveAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> Player1JumpAction;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UInputAction> JumpAction;
-	
+	TObjectPtr<UInputAction> Player2MoveAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UInputAction> MoveAction;
+	TObjectPtr<UInputAction> Player2JumpAction;
 	
 	UPROPERTY(EditAnywhere)
 	float LaneChangeTolerance;
@@ -36,16 +40,41 @@ class AEndlessRunnerCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, meta = (UIMin = "0.0", UIMax = "1.0"))
 	float LaneChangeSpeed;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AEndlessRunnerCharacter> Player2Blueprint;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UInGameWidget> InGameWidgetBlueprint;
+	
+	TObjectPtr<UInGameWidget> InGameWidget;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UUserWidget> GameOverWidgetBlueprint;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<ALevelSegmentsManager> LevelSegmentManagerBlueprint;
+
+	TObjectPtr<AEndlessRunnerCharacter> Player2;
+
+	void SetupLanes();
+	void SetupInput();
+	void SetupInGameWidget();
+	void SetupSecondPlayer();
+	void SetupMyLevelSegmentsManager();
+	
 public:
 	AEndlessRunnerCharacter();
 
 protected:
-	void Move(const FInputActionValue& Value);
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+	void Move(const FInputActionValue& Value);
+	void Player2Move(const FInputActionValue& Value);
+	void Player2Jump(const FInputActionValue& Value);
+	void Player2StopJumping(const FInputActionValue& Value);
+	
+	TObjectPtr<UEnhancedInputComponent> EnhancedInputComponent;
 	
 	virtual void BeginPlay();
-
-	TObjectPtr<UMyGameInstance> MyGameInstance;
 
 	int CurrentLane;
 	float TargetYValue;
@@ -54,13 +83,26 @@ protected:
 	float MaxHp = 3;
 	float CurrentHp;
 
-public:
-	UPROPERTY(BlueprintReadWrite)
-	TObjectPtr<UInGameWidget> InGameWidget;
+	void Die();
+
+	UFUNCTION()
+	void EndGameIfBothPlayersDied();
 	
+	void SaveData();
+	void LoadSavedData();
+	TObjectPtr<UMySaveGame> SavedData;
+
+	TArray<float> LaneYValues;
+
+public:
 	void UpdateHealthBy(float Hp);
 
 	UPROPERTY(BlueprintAssignable)
 	FOnPlayerDeathDelegate OnPlayerDeath;
+
+	UPROPERTY(EditAnywhere)
+	bool bIsFirstPlayer;
+
+	TObjectPtr<ALevelSegmentsManager> MyLevelSegmentManager;
 };
 

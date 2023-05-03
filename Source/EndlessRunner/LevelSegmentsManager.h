@@ -8,44 +8,59 @@
 class ALevelSegment;
 class UBoxComponent;
 class UInGameWidget;
+class AEndlessRunnerCharacter;
 
 UCLASS()
 class ENDLESSRUNNER_API ALevelSegmentsManager : public AActor
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, Category = LevelSegments)
+	UPROPERTY(EditAnywhere, Category = LevelSegmentsManager)
 	float ScrollSpeed;
 	
-	UPROPERTY(EditAnywhere, Category = LevelSegments)
+	UPROPERTY(EditAnywhere, Category = LevelSegmentsManager)
 	float ScrollSpeedIncreaseRate;
 
-	UPROPERTY(VisibleAnywhere, Category = LevelSegments)
+	UPROPERTY(VisibleAnywhere, Category = LevelSegmentsManager)
 	float Difficulty;
 	
-	UPROPERTY(EditAnywhere, Category = LevelSegments)
+	UPROPERTY(EditAnywhere, Category = LevelSegmentsManager)
 	float DifficultyIncreaseRate;
 
-	UPROPERTY(EditAnywhere, Category = LevelSegments)
+	UPROPERTY(EditAnywhere, Category = LevelSegmentsManager)
 	float ScoreMultiplier;
+
+	UPROPERTY(EditAnywhere, Category = LevelSegmentsManager)
+	int LevelSegmentPoolSize;
+
+	UPROPERTY(EditAnywhere, Category = LevelSegmentsManager)
+	TArray<TSubclassOf<ALevelSegment>> SegmentBlueprints;
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UBoxComponent> BoxCollider;
 	
 	TArray<TObjectPtr<ALevelSegment>> CurrentlyActiveSegments;
+
+	void SpawnInitialSegments();
+	void MoveSegments(float Increment);
+	void UpdateScoreValues();
+	void UpdateInGameWidgetValues();
 	
 public:	
 	ALevelSegmentsManager();
-
-	UPROPERTY(EditAnywhere, Category = LevelSegments)
-	TArray<TSubclassOf<ALevelSegment>> SegmentBlueprints;
 	
 	UPROPERTY(BlueprintReadWrite)
 	TObjectPtr<UInGameWidget> InGameWidget;
 
-protected:
-	virtual void BeginPlay() override;
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<AEndlessRunnerCharacter> MyPlayer;
 
+	void StartSetup();
+
+	float Score;
+	float HighScore;
+
+protected:
 	void SpawnLevelSegment(FVector SpawnPos);
 	
 	UFUNCTION()
@@ -57,9 +72,8 @@ protected:
 	void StartMovingSegments();
 	UFUNCTION()
 	void StopMovingSegments();
+	
 	bool bCanMoveSegments;
-
-	void UpdateInGameWidgetValues();
 
 public:	
 	virtual void Tick(float DeltaTime) override;

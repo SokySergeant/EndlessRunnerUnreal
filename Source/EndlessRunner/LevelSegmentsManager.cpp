@@ -12,32 +12,38 @@ ALevelSegmentsManager::ALevelSegmentsManager()
 	PrimaryActorTick.bCanEverTick = true;
 	
 	BoxCollider = CreateDefaultSubobject<UBoxComponent>("Box Collider");
+	RootComponent = BoxCollider;
 	BoxCollider->SetBoxExtent(FVector(100.f, 100.f, 100.f));
 	BoxCollider->SetCollisionResponseToAllChannels(ECR_Overlap);
 	BoxCollider->OnComponentBeginOverlap.AddDynamic(this, &ALevelSegmentsManager::OnBoxColliderOverlap);
 
+	LevelSegmentPoolSize = 5;
+	
 	ScrollSpeed = 25.f;
 	ScrollSpeedIncreaseRate = 1.f;
 	DifficultyIncreaseRate = 1.f;
 	ScoreMultiplier = 1.f;
+
+	HighScore = 0.f;
 }
 
-void ALevelSegmentsManager::BeginPlay()
+void ALevelSegmentsManager::StartSetup()
 {
-	Super::BeginPlay();
+	MyPlayer->OnPlayerDeath.AddDynamic(this, &ALevelSegmentsManager::StopMovingSegments);
 	
 	Difficulty = 1.f;
 	
+	SpawnInitialSegments();
+	StartMovingSegments();
+}
+
+void ALevelSegmentsManager::SpawnInitialSegments()
+{
 	SpawnLevelSegment(GetActorLocation() + FVector(3000.f, 0.f, 0.f));
-	for(int i = 0; i < 20; i++)
+	for(int i = 0; i < LevelSegmentPoolSize; i++)
 	{
 		SpawnLevelSegment(CurrentlyActiveSegments[i]->GetEndLocation());
 	}
-
-	TObjectPtr<AEndlessRunnerCharacter> Player = Cast<AEndlessRunnerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	Player->OnPlayerDeath.AddDynamic(this, &ALevelSegmentsManager::StopMovingSegments);
-	
-	StartMovingSegments();
 }
 
 void ALevelSegmentsManager::Tick(float DeltaTime)
@@ -46,15 +52,20 @@ void ALevelSegmentsManager::Tick(float DeltaTime)
 
 	if(!bCanMoveSegments) return;
 
-	Difficulty += DeltaTime * DifficultyIncreaseRate;
-	ScrollSpeed += DeltaTime * ScrollSpeedIncreaseRate;
+	MoveSegments(DeltaTime);
+	UpdateScoreValues();
+	UpdateInGameWidgetValues();
+}
+
+void ALevelSegmentsManager::MoveSegments(float Increment)
+{
+	Difficulty += Increment * DifficultyIncreaseRate;
+	ScrollSpeed += Increment * ScrollSpeedIncreaseRate;
 
 	for(int i = 0; i < CurrentlyActiveSegments.Num(); i++)
 	{
 		CurrentlyActiveSegments[i]->AddActorLocalOffset(FVector(-ScrollSpeed, 0, 0));
 	}
-
-	UpdateInGameWidgetValues();
 }
 
 void ALevelSegmentsManager::SpawnLevelSegment(FVector SpawnPos)
@@ -64,7 +75,8 @@ void ALevelSegmentsManager::SpawnLevelSegment(FVector SpawnPos)
 	FActorSpawnParameters SpawnParams;
 	FRotator SpawnRot = GetActorRotation();
 	int RandomSegmentIndex = FMath::RandRange(0, (SegmentBlueprints.Num() - 1));
-	CurrentlyActiveSegments.Add(GetWorld()->SpawnActor<ALevelSegment>(SegmentBlueprints[RandomSegmentIndex], SpawnPos, SpawnRot, SpawnParams));
+	TObjectPtr<ALevelSegment> TempSegment = GetWorld()->SpawnActor<ALevelSegment>(SegmentBlueprints[RandomSegmentIndex], SpawnPos, SpawnRot, SpawnParams);
+	CurrentlyActiveSegments.Add(TempSegment);
 }
 
 void ALevelSegmentsManager::OnBoxColliderOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& Hit)
@@ -102,12 +114,28 @@ void ALevelSegmentsManager::StopMovingSegments()
 	bCanMoveSegments = false;
 }
 
+void ALevelSegmentsManager::UpdateScoreValues()
+{
+	Score = (ScrollSpeed + Difficulty) * ScoreMultiplier;
+	if(Score > HighScore)
+	{
+		HighScore = Score;
+	}
+}
+
 void ALevelSegmentsManager::UpdateInGameWidgetValues()
 {
 	if(!InGameWidget) return;
-	
-	float Score = (ScrollSpeed + Difficulty) * ScoreMultiplier;
-	InGameWidget->ScoreText->SetText(FText::AsNumber(Score));
 
-	InGameWidget->SpeedText->SetText(FText::AsNumber(ScrollSpeed));
+	if(MyPlayer->bIsFirstPlayer)
+	{
+		InGameWidget->P1ScoreText->SetText(FText::AsNumber(FMath::TruncToInt(Score)));
+		InGameWidget->P1HighScoreText->SetText(FText::AsNumber(FMath::TruncToInt(HighScore)));
+		InGameWidget->P1SpeedText->SetText(FText::AsNumber(FMath::TruncToInt(ScrollSpeed)));
+	}else
+	{
+		InGameWidget->P2ScoreText->SetText(FText::AsNumber(FMath::TruncToInt(Score)));
+		InGameWidget->P2HighScoreText->SetText(FText::AsNumber(FMath::TruncToInt(HighScore)));
+		InGameWidget->P2SpeedText->SetText(FText::AsNumber(FMath::TruncToInt(ScrollSpeed)));
+	}
 }

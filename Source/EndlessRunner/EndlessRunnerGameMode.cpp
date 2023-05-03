@@ -1,8 +1,7 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "EndlessRunnerGameMode.h"
 #include "EndlessRunnerCharacter.h"
-#include "UObject/ConstructorHelpers.h"
+#include "Kismet/GameplayStatics.h"
 
 AEndlessRunnerGameMode::AEndlessRunnerGameMode()
 {

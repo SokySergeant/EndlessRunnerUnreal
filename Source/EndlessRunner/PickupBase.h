@@ -13,9 +13,17 @@ class ENDLESSRUNNER_API APickupBase : public AActor
 {
 	GENERATED_BODY()
 
+public:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USceneComponent> RootSceneComponent;
-	
+
+	void HideSelf();
+	void ShowSelf();
+	bool bIsSelfHidden;
+
+	virtual void ResetSelf();
+
+private:
 	UPROPERTY(EditAnywhere)
     TObjectPtr<UBoxComponent> BoxCollider;
     	

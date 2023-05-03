@@ -19,10 +19,16 @@ struct FObstaclesStruct
 	TArray<TSubclassOf<AObstacle>> ObstacleBlueprints;
 
 	UPROPERTY(VisibleAnywhere)
-	TArray<TObjectPtr<AActor>> SpawnedObstacles;
+	TArray<TObjectPtr<AObstacle>> SpawnedObstacles;
 
 	UPROPERTY(EditAnywhere)
 	float FrequencyOfObstacles;
+
+	UPROPERTY(EditAnywhere)
+	int MaxObstacleAmount;
+
+	UPROPERTY(EditAnywhere, meta = (UIMin = "0.0", UIMax = "1.0"))
+	float ChanceForFurtherObstacleToExplodeWhenOneIsDodged; //I'm sorry, I couldn't find a shorter name
 };
 
 USTRUCT()
@@ -34,7 +40,7 @@ struct FPickupsStruct
 	TArray<TSubclassOf<APickupBase>> PickupBlueprints;
 
 	UPROPERTY(VisibleAnywhere)
-	TArray<TObjectPtr<AActor>> SpawnedPickups;
+	TArray<TObjectPtr<APickupBase>> SpawnedPickups;
 
 	UPROPERTY(EditAnywhere)
 	float FrequencyOfPickups;
@@ -57,8 +63,6 @@ class ENDLESSRUNNER_API ALevelSegment : public AActor
 	UPROPERTY(EditAnywhere, Category = Spawnables)
 	FPickupsStruct Pickups;
 	
-	TObjectPtr<UMyGameInstance> MyGameInstance;
-	
 public:	
 	ALevelSegment();
 
@@ -69,6 +73,9 @@ protected:
 
 	void SetupObstacles(int AmountOfObstacles);
 	void SetupPickups(int AmountOfPickups);
+
+	UFUNCTION()
+	void OnObstacleDodged();
 
 public:	
 	FVector GetEndLocation() {return EndLocationComponent->GetComponentLocation();};
